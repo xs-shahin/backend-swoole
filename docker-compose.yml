@@ -1,0 +1,38 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: xpeedstudio
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: yousuite
+    container_name: yousite-app
+    ports:
+      - "8888:9000"
+    restart: unless-stopped
+    working_dir: /var/www/html/
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - dev-network
+  mongo:
+    image: mongo
+    restart: always
+    container_name: mongo-docker
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
+      #MONGODB_AUTH_DATABASE: admin
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./workspace:/workspace
+      - type: volume
+        # source: /data/db
+        target: /data/db
+
+networks:
+  dev-network:
+    driver: bridge
