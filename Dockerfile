@@ -40,7 +40,7 @@ RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
 
 FROM php:${PHP_VERSION}-cli-buster
 
-LABEL maintainer="Seyed Morteza Ebadi <seyed.me720@gmail.com>"
+LABEL maintainer="xpeedstudio <help@xpeedstudio.com>"
 
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
@@ -327,6 +327,6 @@ RUN cat deployment/octane/utilities.sh >> ~/.bashrc
 EXPOSE 9000
 EXPOSE 6001
 
-ENTRYPOINT ["deployment/octane/entrypoint.sh"]
+ENTRYPOINT ["sh", "deployment/octane/entrypoint.sh"]
 
 HEALTHCHECK --start-period=5s --interval=2s --timeout=5s --retries=8 CMD php artisan octane:status || exit 1

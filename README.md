@@ -1,66 +1,121 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Octane Dockerfile
+<a href="/LICENSE"><img alt="License" src="https://img.shields.io/github/license/exaco/laravel-octane-dockerfile"></a>
+<a href="https://github.com/exaco/laravel-octane-dockerfile/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/exaco/laravel-octane-dockerfile"></a>
+<a href="https://github.com/exaco/laravel-octane-dockerfile/pulls"><img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed/exaco/laravel-octane-dockerfile"></a> <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/roadrunner-test.yml/badge.svg"></a> <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/swoole-test.yml/badge.svg"></a>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A pretty configurable, production-ready, and multi-stage Dockerfile for [Laravel Octane](https://github.com/laravel/octane)
+powered web services and microservices.
 
-## About Laravel
+The Docker configuration provides the following setup:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.1 and 8.2 official DebianBuster-based images
+- Preconfigured JIT compiler and OPcache
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Container modes
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+You can build the Docker image in different modes:
 
-## Learning Laravel
+| Mode             | `CONTAINER_MODE` ARG | HTTP server | Exposed port |
+|------------------|----------------------|------------| ------------|
+| Octane (default) | `app`                | Swoole / RoadRunner | 9000 |
+| Horizen          | `horizon`            | - | - |
+| Scheduler        | `scheduler`          | - | - |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+> If you want to run Horizon in the Octane container, then you should set `APP_WITH_HORIZON` build argument `true`.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+> If you want to run Scheduler in the Octane container, then you should set `APP_WITH_SCHEDULER` build argument `true`.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## PHP extensions
 
-## Laravel Sponsors
+And the following PHP extensions are included:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+- [x] OpenSwoole/Swoole with support of OpenSSL, HTTP/2, Native cURL hook for coroutines, `mysqlnd`, and asynchronous DNS.
+- [x] OPcache
+- [x] Redis
+- [x] PCNTL
+- [x] BCMath
+- [x] RDKAFKA
+- [x] INTL
+- [x] pdo_mysql
+- [x] pdo_pgsql (disabled by default)
+- [x] pgsql (disabled by default)
+- [x] Memcached (disabled by default)
+- [x] zip
+- [x] cURL
+- [x] GD
+- [x] mbstring
+- [x] bz2
 
-### Premium Partners
+## Usage
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+1. Clone this repository:
+```
+git clone git@github.com:yosuite/backend-swoole.git
+```
+2. docker configuration directory is `deployment` directory, `Dockerfile`, and `.dockerignore` into this Octane powered Laravel project
+3. Change the directory to your Laravel project
+4. Build your image:
 
-## Contributing
+- Container `app` mode:
+```
+docker build -t <image-name>:<tag> .
+```
+- Container `horizon` mode:
+```
+docker build -t <image-name>:<tag> --build-arg CONTAINER_MODE=horizon .
+```
+- Container `scheduler` mode:
+```
+docker build -t <image-name>:<tag> --build-arg CONTAINER_MODE=scheduler .
+```
+5. Up the container:
+```
+docker run -p <port>:9000 --rm <image-name>:<tag>
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Configuration
 
-## Code of Conduct
+There is something that you maybe want to configure:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Swoole HTTP server config in `supervisord.app.conf`
+- OPcache and JIT configurations in `opcache.ini`
+- PHP configurations in `php.ini`
+- `ENTRYPOINT` Bash script in `entrypoint.sh`
+- Set `PHP_VERSION` using the `--build-arg` option along with the build command
+- Set `TZ` (OS timezone) using the `--build-arg` option along with the build command
 
-## Security Vulnerabilities
+## Using RoadRunner instead of Swoole
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Ensure you have roadrunner as a dependency in your `composer.json`
+2. Set `OCTANE_SERVER=roadrunner` using the `--build-arg` option along with the build command
 
-## License
+> You can configure RoadRunner through `deployment/octane/.rr.prod.yaml`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Recommended Swoole options for `octane.php`
+
+```php
+// config/octane.php
+
+return [
+    'swoole' => [
+        'options' => [
+            'http_compression' => true,
+            'http_compression_level' => 6, // 1 - 9
+            'compression_min_length' => 20,
+            'package_max_length' => 20 * 1024 * 1024, // 20MB
+            'open_http2_protocol' => true,
+            'document_root' => public_path(),
+            'enable_static_handler' => true,
+        ]
+    ]
+];
+```
+
+## Utilities
+
+Also, some useful Bash functions and aliases are added in `utilities.sh` that maybe help.
+
+## Notes
+
+- Laravel Octane logs request information only in the `local` environment.
+- Please be aware of `.dockerignore` content
