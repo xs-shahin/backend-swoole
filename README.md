@@ -52,6 +52,10 @@ And the following PHP extensions are included:
 ```
 git clone git@github.com:yosuite/backend-swoole.git
 ```
+and run the command 'docker-compose up -d'
+
+If you want to run the docker file differently. Please follow the following steps
+
 2. docker configuration directory is `deployment` directory, `Dockerfile`, and `.dockerignore` into this Octane powered Laravel project
 3. Change the directory to your Laravel project
 4. Build your image:
